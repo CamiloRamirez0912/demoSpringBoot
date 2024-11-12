@@ -5,8 +5,8 @@ import java.time.Period;
 
 public class UtilDate {
      public static int calculateAge(LocalDate birthday) {
-        LocalDate hoy = LocalDate.now();
-        Period periodo = Period.between(birthday, hoy);
-        return periodo.getYears();
+        LocalDate today = LocalDate.now();
+        Period period = Period.between(birthday, today);
+        return period.getYears();
     }
 }
