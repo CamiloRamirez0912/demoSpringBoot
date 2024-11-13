@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
-@RequestMapping("/prog2/people")
+@RequestMapping("/prog2/202214307/people")
 public class PeopleController {
 
   @Autowired
