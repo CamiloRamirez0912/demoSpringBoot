@@ -34,23 +34,36 @@ public class PeopleManagerService {
         pathDirectory = Paths.get(System.getProperty("user.dir"));
     }    
 
+    public void initFile() throws IOException {
+        Path filePath = getAbsPathPersons();
+        File file = filePath.toFile();
+
+        if (!file.exists())
+            file.createNewFile();
+        
+
+        if (file.length() == 0) {
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+                writer.write("[]");
+            }
+        }
+    }
+
     public void addPerson(PersonModel person) throws IOException {
+        initFile();
+
         RandomAccessFile raf = new RandomAccessFile(getAbsPathPersons().toString(), "rw");
         long fileLength = raf.length();
         int id = getAndUpdateLastId();
         person.setId((long) id);
 
-        if (fileLength == 0) {
-            // Archivo vacío: se inicia el array JSON
-            raf.writeBytes("[\n");
-            raf.writeBytes(chainObjectJson(person) + "\n");
-            raf.writeBytes("]");
-        } else {
-            raf.seek(fileLength - 2);
+        raf.seek(fileLength - 1);
+
+        if (fileLength > 2)
             raf.writeBytes(",\n");
-            raf.writeBytes(chainObjectJson(person) + "\n");
-            raf.writeBytes("]");
-        }
+        
+
+        raf.writeBytes(chainObjectJson(person) + "\n]");
         raf.close();
     }
 
