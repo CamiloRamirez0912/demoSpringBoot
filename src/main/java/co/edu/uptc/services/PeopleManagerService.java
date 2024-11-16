@@ -76,9 +76,9 @@ public class PeopleManagerService {
         File file = filePath.toFile();
         Map<String, Integer> idInfo = new HashMap<>();
 
-        if (file.exists() && file.length() > 0) {
+        if (file.exists() && file.length() > 0) 
             idInfo = mapper.readValue(file, new TypeReference<Map<String, Integer>>() {});
-        }
+        
 
         int lastIdPerson = idInfo.getOrDefault("lastId", 0);
         idInfo.put("lastId", lastIdPerson + 1);
@@ -106,14 +106,13 @@ public class PeopleManagerService {
             List<PersonModel> filteredPersons = new ArrayList<>();
 
             for (PersonModel person : persons) {
-                if (!person.isDeleted()) {
+                if (!person.isDeleted()) 
                     filteredPersons.add(person);
-                }
             }
 
             contentFile = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(filteredPersons);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
         return contentFile;
     }
