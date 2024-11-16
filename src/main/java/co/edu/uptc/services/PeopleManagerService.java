@@ -1,82 +1,95 @@
 package co.edu.uptc.services;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import lombok.Getter;
 
 import co.edu.uptc.models.PersonModel;
-import co.edu.uptc.models.PersonModel.Genders;
 
 @Service
 public class PeopleManagerService {
 
-    private ArrayList<PersonModel> people;
-    private Long ids=0L;
+    @Getter
+    private final ObjectMapper mapper;
+    private Path pathDirectory;
+
+    @Value("${source.file.people}")
+    String pathPeopleFile;
+
+    @Value("${source.file.idPeople}")
+    String pathIdPeople;
 
     public PeopleManagerService(){
-        people = new ArrayList<>();
+        mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        pathDirectory = Paths.get(System.getProperty("user.dir"));
+    }    
 
-        // TODO  this is temporary
-        fillPeople();
-    }
-    
-    public void addPerson(PersonModel person){
-        person.setId(ids);
-        ids++;
-        people.add(person);
-    }
+    public void addPerson(PersonModel person) throws IOException {
+        RandomAccessFile raf = new RandomAccessFile(getAbsPathPersons().toString(), "rw");
+        long fileLength = raf.length();
+        int id = getAndUpdateLastId();
+        person.setId((long) id);
 
-
-    public ArrayList<PersonModel> getPeople(){
-        return people;
-    }
-
-   public PersonModel deletePerson(Long id){
-    PersonModel auxPersonModel=getPerson(id);    
-    if (auxPersonModel!=null) {
-        people.remove(auxPersonModel);
-    }
-    return auxPersonModel;
-   }
-
-   public PersonModel getPerson(Long id){ 
-    PersonModel auxPersonModel=null;
-   for (PersonModel personModel : people) {
-       if (personModel.getId() == id) {
-           auxPersonModel = personModel;
-       }
-   }
-   return auxPersonModel;
-}
-
-
-  //TODO This method is temporary, only for testing
-    public void fillPeople(){
-       PersonModel personModel = new PersonModel();
-       personModel.setName("Calos");
-       personModel.setLastName("Lopez");
-       personModel.setGender(Genders.MALE);
-       personModel.setBirthday(LocalDate.of(1990, 12, 31));
-       addPerson(personModel);
-
-       personModel = new PersonModel();
-       personModel.setName("Maria");
-       personModel.setLastName("Perez");
-       personModel.setGender(Genders.FEMALE);
-       personModel.setBirthday(LocalDate.of(2000, 1, 6));
-       addPerson(personModel);
-
-
-       personModel = new PersonModel();
-       personModel.setName("Diego");
-       personModel.setLastName("Aponte");
-       personModel.setGender(Genders.MALE);
-       personModel.setBirthday(LocalDate.of(2010, 3, 7));
-       addPerson(personModel);
-
-
+        if (fileLength == 0) {
+            // Archivo vacío: se inicia el array JSON
+            raf.writeBytes("[\n");
+            raf.writeBytes(chainObjectJson(person) + "\n");
+            raf.writeBytes("]");
+        } else {
+            raf.seek(fileLength - 2);
+            raf.writeBytes(",\n");
+            raf.writeBytes(chainObjectJson(person) + "\n");
+            raf.writeBytes("]");
+        }
+        raf.close();
     }
 
-    
+
+    private int getAndUpdateLastId() throws IOException {
+        int lastIdPerson = 0;
+        File fileInfo = new File(getAbsPathInfoPersons().toString());
+        JsonNode rootNode = mapper.readTree(fileInfo);
+        lastIdPerson = rootNode.get("lastId").asInt();
+        ((ObjectNode) rootNode).put("lastId", lastIdPerson + 1);
+        mapper.writeValue(fileInfo, rootNode);
+        return lastIdPerson;
+    }
+
+    private String chainObjectJson(PersonModel person) {
+        return "{\n" +
+                "  \"id\": " + person.getId() + ",\n" +
+                "  \"name\": \"" + person.getName() + "\",\n" +
+                "  \"lastName\": \"" + person.getLastName() + "\",\n" +
+                "  \"age\": " + person.getAge() + ",\n" +
+                "  \"gender\": \"" + person.getGender().toString() + "\"\n" +
+                "}";
+    }
+
+    public String getFilePersons() {
+        String contentFile = "";
+        try {
+            contentFile = Files.readString(getAbsPathPersons());
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return contentFile;
+    }
+
+    private Path getAbsPathPersons() {
+        return Paths.get(pathDirectory.toString(), pathPeopleFile);
+    }
+
+    private Path getAbsPathInfoPersons() {
+        return Paths.get(pathDirectory.toString(), pathIdPeople);
+    }
 }

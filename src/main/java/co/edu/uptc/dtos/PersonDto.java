@@ -1,9 +1,6 @@
 package co.edu.uptc.dtos;
 
-
-import java.time.LocalDate;
-import java.time.Period;
-
+import co.edu.uptc.helpers.UtilDate;
 import co.edu.uptc.models.PersonModel;
 import co.edu.uptc.models.PersonModel.Genders;
 import lombok.Getter;
@@ -24,7 +21,7 @@ public class PersonDto {
       personDto.setLastName(person.getLastName());
       personDto.setId(person.getId());
       personDto.setGender(person.getGender());
-      personDto.setAge(Period.between(person.getBirthday(), LocalDate.now()).getYears());
+      personDto.setAge(UtilDate.calculateAge(person.getBirthday()));
       return personDto;
    }
 }
