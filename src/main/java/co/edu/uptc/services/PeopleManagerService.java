@@ -118,6 +118,38 @@ public class PeopleManagerService {
         return contentFile;
     }
 
+    public PersonModel getPersonById(Long id) throws IOException {
+        initFile();
+        String fullContent = Files.readString(getAbsPathPersons());
+        List<PersonModel> persons = mapper.readValue(fullContent, new TypeReference<List<PersonModel>>() {
+        });
+
+        for (PersonModel person : persons) {
+            if (person.getId().equals(id) && !person.isDeleted()) {
+                return person;
+            }
+        }
+
+        return null;
+    }
+
+    public PersonModel deletePersonById(Long id) throws IOException {
+        initFile();
+        String fullContent = Files.readString(getAbsPathPersons());
+        List<PersonModel> persons = mapper.readValue(fullContent, new TypeReference<List<PersonModel>>() {
+        });
+
+        for (PersonModel person : persons) {
+            if (person.getId().equals(id) && !person.isDeleted()) {
+                person.setDeleted(true);
+                mapper.writerWithDefaultPrettyPrinter().writeValue(getAbsPathPersons().toFile(), persons);
+                return person;
+            }
+        }
+
+        return null; 
+    }
+
     private Path getAbsPathPersons() {
         return Paths.get(pathDirectory.toString(), pathPeopleFile);
     }
