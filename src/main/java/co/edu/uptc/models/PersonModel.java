@@ -2,6 +2,7 @@ package co.edu.uptc.models;
 
 import java.time.LocalDate;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import co.edu.uptc.helpers.UtilDate;
 import lombok.Getter;
@@ -9,6 +10,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
+@JsonInclude(JsonInclude.Include.NON_NULL) // Ignorar campos nulos en la serialización
 public class PersonModel {
     @JsonProperty("id")
     private Long id;
@@ -22,6 +24,8 @@ public class PersonModel {
     private LocalDate birthday;
     @JsonProperty("gender")
     private Genders gender;
+    @JsonProperty("deleted")
+    private boolean deleted;
 
     public enum Genders {
         MALE,
@@ -34,5 +38,10 @@ public class PersonModel {
         if (birthday != null) {
             this.age = UtilDate.calculateAge(birthday);
         }
+    }
+
+    // Constructor que inicializa deleted como false
+    public PersonModel() {
+        this.deleted = false;
     }
 }
