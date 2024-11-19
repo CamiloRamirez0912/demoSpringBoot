@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.RestController;
 import co.edu.uptc.models.PersonModel;
 import co.edu.uptc.services.PeopleManagerService;
 import java.io.IOException;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -64,6 +66,21 @@ public class PeopleController {
       e.printStackTrace();
       return ResponseEntity.status(500).build();
     }
+  }
+
+  @GetMapping("/lowest-salary")
+  public ResponseEntity<List<PersonModel>> getPersonsWithLowestSalary() {
+      try {
+          List<PersonModel> personsWithLowestSalary = peopleManagerService.getLowestSalary();
+          if (!personsWithLowestSalary.isEmpty()) {
+              return ResponseEntity.ok(personsWithLowestSalary);
+          } else {
+              return ResponseEntity.notFound().build();
+          }
+      } catch (IOException e) {
+          e.printStackTrace();
+          return ResponseEntity.status(500).build();
+      }
   }
 
 }

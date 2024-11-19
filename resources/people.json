@@ -1,0 +1,30 @@
+[ {
+  "id" : 0,
+  "name" : "Persona",
+  "lastName" : "1",
+  "gender" : "MALE",
+  "deleted" : false,
+  "documentType" : "ID_CARD",
+  "documentNumber" : "100985678",
+  "salary" : 1000.0
+}, {
+  "id" : 1,
+  "name" : "Persona",
+  "lastName" : "2",
+  "gender" : "MALE",
+  "deleted" : true,
+  "documentType" : "ID_CARD",
+  "documentNumber" : "100985678",
+  "salary" : 800.0
+}, {
+  "id" : 2,
+  "name" : "Persona",
+  "lastName" : "3",
+  "gender" : "MALE",
+  "deleted" : false,
+  "documentType" : "ID_CARD",
+  "documentNumber" : "100985678",
+  "salary" : 1200.0
+} ,
+{"id":3,"name":"Persona","lastName":"4","gender":"MALE","deleted":false,"documentType":"ID_CARD","documentNumber":"100985678","salary":1000.0}
+]
