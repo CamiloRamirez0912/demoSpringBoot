@@ -10,7 +10,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@JsonInclude(JsonInclude.Include.NON_NULL) // Ignorar campos nulos en la serialización
+@JsonInclude(JsonInclude.Include.NON_NULL) 
 public class PersonModel {
     @JsonProperty("id")
     private Long id;
@@ -32,7 +32,6 @@ public class PersonModel {
         FEMALE
     }
 
-    // Setter modificado para calcular la edad usando UtilDate
     public void setBirthday(LocalDate birthday) {
         this.birthday = birthday;
         if (birthday != null) {
@@ -40,7 +39,6 @@ public class PersonModel {
         }
     }
 
-    // Constructor que inicializa deleted como false
     public PersonModel() {
         this.deleted = false;
     }
